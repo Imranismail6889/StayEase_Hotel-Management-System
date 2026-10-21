@@ -1,1 +1,1 @@
-# StayEase_Hotel-Management-System
+# StayEase_Hotel Management System
