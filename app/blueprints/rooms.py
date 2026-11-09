@@ -35,7 +35,7 @@ def list_rooms():
     ]
     for name in amenity_names:
         query = query.filter(Room.amenities.any(Amenity.name.ilike("%" + name + "%")))
-    rows = query.distinct().all()
+    rows = query.all()
     if data.get("check_in") or data.get("check_out"):
         if (
             not data.get("check_in")
