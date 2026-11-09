@@ -1,64 +1,162 @@
 # StayEase
 
-StayEase is a Flask hotel reservation system with a responsive vanilla JavaScript single-page website and a persistent REST API. SQLite is the zero-configuration default; PostgreSQL and MySQL adapters are included for deployments that set `DATABASE_URL`. The app includes guest accounts, room search, server-side quotes and reservations, mock payments, cancellation and refund rules, reviews, favorites, loyalty, notifications, and an admin dashboard.
+# 🏨 StayEase – Premium Hotel Reservation Website
 
-## Setup
+**StayEase** is a modern, responsive hotel reservation web application designed to make hotel booking and management simple, convenient, and user-friendly.
 
-Python 3.10 or newer is required. From the project folder:
+The application provides customers with an easy way to explore rooms, check availability, make reservations, and manage their bookings. It also includes an admin dashboard for managing hotel operations, rooms, customers, bookings, and reports.
 
-    python -m venv .venv
-    .venv\Scripts\Activate.ps1
-    python -m pip install -r requirements.txt
-    Copy-Item .env.example .env
-    .venv\Scripts\python.exe -m flask db upgrade
-    .venv\Scripts\python.exe -m flask seed
-    .venv\Scripts\python.exe -m flask run
+## ✨ Features
 
-The site is served at http://127.0.0.1:5000. The seed command creates the schema if needed and inserts 12 demo users, 20 rooms, 9 amenities, 4 promo codes, 32 historical reservations, payments, and reviews. It is safe to run after seeding.
+### 🏠 Home Page
+- Luxury hotel-themed user interface.
+- Interactive hero section with rotating slides.
+- Smart room search with check-in, check-out, and guest selection.
+- Featured rooms and special offers.
+- Hotel amenities and guest testimonials.
+- Newsletter subscription and FAQ section.
 
-To rebuild the demo database, run `.venv\Scripts\python.exe -m flask reset-db`. To run the tests, run `.venv\Scripts\python.exe -m pytest -q`.
+### 🛏️ Room Management
+- Browse available hotel rooms.
+- Filter rooms by type, price, capacity, and amenities.
+- Sort rooms based on price, rating, and capacity.
+- Grid and list viewing options.
+- Add rooms to favorites.
+- Compare up to three rooms.
+- View detailed room information and availability.
 
-`DATABASE_URL` accepts standard `postgresql://...` and `mysql://...` URLs and selects the included Psycopg or PyMySQL driver. Set it in `.env` before running migrations. The development default remains `sqlite:///stayease.db`.
+### 👤 User Authentication
+- Customer registration and login.
+- Form validation.
+- Password visibility toggle.
+- Password strength indicator.
+- Forgot password functionality.
+- Role-based authentication for customers and administrators.
 
-For production, set strong SECRET_KEY and JWT_SECRET_KEY values and configure DATABASE_URL, then run:
+### 📅 Booking Management
+- Multi-step hotel booking process.
+- Select check-in and check-out dates.
+- Calculate booking prices automatically.
+- Choose additional services.
+- Apply promotional discount codes.
+- Mock payment processing.
+- Booking confirmation with booking ID.
+- Download printable invoices.
+- Add bookings to calendar.
 
-    gunicorn wsgi:app -b 0.0.0.0:8000
+### 📊 Customer Dashboard
+- View booking history.
+- Manage upcoming and past reservations.
+- Cancel or modify bookings.
+- Manage favorite rooms.
+- View loyalty points and rewards.
+- Update profile information.
+- Receive booking notifications.
 
-## Demo accounts
+### 🛠️ Admin Dashboard
+- Hotel overview and statistics.
+- Interactive revenue chart.
+- Room availability and occupancy statistics.
+- Manage rooms and room status.
+- Manage customer bookings.
+- View customer information.
+- Export booking records to CSV.
+- Generate revenue and booking reports.
+- Manage hotel settings and promotional codes.
 
-- Admin: admin@stayease.com / Admin@123
-- Guest: guest@stayease.com / Guest@123
-- Additional seeded guests use Guest@123.
+### 🎨 Additional Features
+- Responsive design for desktop, tablet, and mobile.
+- Light mode and dark mode.
+- Smooth animations and transitions.
+- Interactive modals and notifications.
+- Loading skeletons.
+- Accessible navigation and form validation.
 
-## API overview
+## 💻 Technologies Used
 
-API responses use a success/data envelope or an error envelope. Protected endpoints accept Authorization: Bearer <token>. Access tokens expire after seven days and the browser stores the token in local storage.
+- **HTML5** – Website structure.
+- **CSS3** – Styling, animations, and responsive design.
+- **JavaScript (Vanilla JS)** – Functionality and interactivity.
+- **Google Fonts** – Playfair Display and DM Sans.
 
-- POST /api/auth/register, POST /api/auth/login, GET or PUT /api/auth/me
-- GET /api/rooms, GET /api/rooms/<id>, room availability and reviews
-- POST /api/bookings/quote, POST /api/bookings, reservation list, details, changes, cancellation, invoice, and calendar export
-- GET/POST /api/reviews, GET /api/loyalty, /api/favorites, /api/promos/validate, /api/notifications, /api/newsletter/subscribe
-- /api/admin/stats, /today, /activity, plus room, booking, customer, promo, and setting management
+## 🏗️ Application Architecture
 
-## Data model
+StayEase is developed as a single-page web application using HTML, CSS, and vanilla JavaScript.
 
-```mermaid
-erDiagram
-  USER ||--o{ BOOKING : makes
-  ROOM ||--o{ BOOKING : contains
-  ROOM }o--o{ AMENITY : offers
-  BOOKING ||--o{ PAYMENT : receives
-  BOOKING ||--o{ BOOKING_EXTRA : includes
-  USER ||--o{ REVIEW : writes
-  ROOM ||--o{ REVIEW : receives
-  BOOKING ||--o| REVIEW : verifies
-  USER ||--o{ FAVORITE : saves
-  ROOM ||--o{ FAVORITE : saved_as
-  USER ||--o{ NOTIFICATION : receives
-  USER ||--o{ LOYALTY_TRANSACTION : earns
-  BOOKING ||--o{ LOYALTY_TRANSACTION : records
+It uses:
+- In-memory mock data.
+- Simulated asynchronous API functions.
+- Template-based page rendering.
+- Client-side state management.
+
+The application currently works as a front-end demonstration without a connected production backend or real payment gateway.
+
+## 📂 Project Structure
+
+```text
+StayEase/
+│
+├── index.html
+└── README.md
 ```
 
-## Payments and data handling
+The application contains HTML, CSS, and JavaScript in a single self-contained HTML file.
 
-The payment gateway is a mock service. It stores a generated transaction reference and, when provided, the card brand and last four digits only. The raw card number and CVC are never sent to Flask or stored. Replace the mock service with a hosted Stripe or Razorpay checkout before accepting real payments.
+## 🚀 Getting Started
+
+Follow these steps to run the project locally.
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Imranismail6889/StayEase.git
+```
+
+2. Open the project folder:
+
+```bash
+cd StayEase
+```
+
+3. Open `index.html` in your web browser.
+
+No additional dependencies or installation are required.
+
+## 🔐 Demo Login Credentials
+
+**Admin Account**
+
+```text
+Email: admin@stayease.com
+Password: admin123
+```
+
+**Customer Account**
+
+You can register a new customer account or use any email address with a password containing at least 6 characters.
+
+*Note: These are demonstration credentials for the front-end application.*
+
+## 🔮 Future Enhancements
+
+- Integration with a real backend using Node.js and Express.
+- MySQL or MongoDB database integration.
+- Secure authentication using JWT.
+- Real payment gateway integration using Razorpay or Stripe.
+- Email booking confirmations.
+- Real-time room availability.
+- Multi-language support.
+
+## 🎯 Project Objective
+
+The main objective of StayEase is to develop a user-friendly hotel reservation and management platform that simplifies hotel booking operations, improves customer experience, and provides administrators with efficient management tools.
+
+## 👨‍💻 Developed By
+
+**Imran Ismail**
+
+- GitHub: [Imranismail6889](https://github.com/Imranismail6889)
+
+## 📄 License
+
+This project is developed for educational and demonstration purposes.
