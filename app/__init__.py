@@ -2,8 +2,11 @@
 
 import os
 from datetime import timedelta
+from tempfile import gettempdir
+
 from flask import Flask, send_from_directory
 from werkzeug.exceptions import HTTPException
+
 from app.extensions import cors, db, jwt, limiter, migrate
 from app.utils.errors import APIError
 from app.utils.responses import error
@@ -14,8 +17,12 @@ def create_app(config_object=None):
         "APP_ENV", os.getenv("VERCEL_ENV", os.getenv("FLASK_ENV", "development"))
     ).lower()
     is_deployment = env_name in {"production", "preview"}
+    instance_path = (
+        os.path.join(gettempdir(), "stayease") if os.getenv("VERCEL_ENV") else None
+    )
     app = Flask(
         __name__,
+        instance_path=instance_path,
         instance_relative_config=True,
         static_folder="static",
         template_folder="templates",
