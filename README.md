@@ -175,7 +175,7 @@ Email: guest@stayease.com
 Password: Guest@123
 ```
 
-These demo accounts are available through the database seed command.
+These credentials are for local development only; production seeding requires a unique administrator password.
 
 ## 🗄️ Database Models
 
@@ -250,3 +250,10 @@ GitHub: [Imranismail6889](https://github.com/Imranismail6889)
 ## 📄 License
 
 This project is developed for educational and demonstration purposes.
+
+
+## Vercel deployment
+
+Vercel serves the Flask app through the root `wsgi.py` entry point. The configured build step copies CSS and JavaScript into `public/static/` for CDN delivery. Production and preview environments must set strong `SECRET_KEY` and `JWT_SECRET_KEY` values and a persistent PostgreSQL or MySQL `DATABASE_URL`; the app refuses to start with SQLite in those environments. Apply migrations to the remote database before serving traffic.
+
+Production `flask seed` requires a unique `STAYEASE_ADMIN_PASSWORD` with at least 16 characters. Seeded customer accounts receive random passwords unless `STAYEASE_GUEST_PASSWORD` is set. `flask reset-db` is disabled in production and preview environments.

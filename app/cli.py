@@ -2,6 +2,8 @@
 
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
+import os
+import secrets
 import click
 from app.extensions import db
 from app.models import (
@@ -21,20 +23,44 @@ def register_cli(app):
     @app.cli.command("seed")
     def seed_command():
         """Create tables and insert demo data."""
+        production = _is_deployment_environment()
+        admin_password = os.getenv("STAYEASE_ADMIN_PASSWORD")
+        if production and (not admin_password or len(admin_password) < 16):
+            raise click.ClickException(
+                "Set STAYEASE_ADMIN_PASSWORD to a unique value of at least 16 characters before production seeding."
+            )
         db.create_all()
-        _seed()
+        _seed(
+            admin_password=admin_password if production else None,
+            guest_password=(
+                (os.getenv("STAYEASE_GUEST_PASSWORD") or secrets.token_urlsafe(32))
+                if production
+                else None
+            ),
+            randomize_customer_passwords=production,
+        )
         click.echo("StayEase demo data is ready.")
 
     @app.cli.command("reset-db")
     def reset_db_command():
         """Drop tables, recreate the schema, and seed demo data."""
+        if _is_deployment_environment():
+            raise click.ClickException(
+                "reset-db is disabled in production and preview deployments."
+            )
         db.drop_all()
         db.create_all()
         _seed()
         click.echo("StayEase database reset and seeded.")
 
 
-def _seed():
+def _is_deployment_environment():
+    return os.getenv(
+        "APP_ENV", os.getenv("VERCEL_ENV", os.getenv("FLASK_ENV", "development"))
+    ).lower() in {"production", "preview"}
+
+
+def _seed(admin_password=None, guest_password=None, randomize_customer_passwords=False):
     if User.query.first():
         return
     admin = User(
@@ -43,11 +69,11 @@ def _seed():
         phone="+1 (415) 555-0100",
         role="admin",
     )
-    admin.set_password("Admin@123")
+    admin.set_password(admin_password or "Admin@123")
     demo = User(
         name="Olivia Martin", email="guest@stayease.com", phone="+1 (415) 555-0128"
     )
-    demo.set_password("Guest@123")
+    demo.set_password(guest_password or "Guest@123")
     db.session.add_all([admin, demo])
     names = [
         ("James Wilson", "james.wilson@example.com"),
@@ -64,7 +90,9 @@ def _seed():
     customers = [demo]
     for name, email in names:
         user = User(name=name, email=email)
-        user.set_password("Guest@123")
+        user.set_password(
+            secrets.token_urlsafe(32) if randomize_customer_passwords else "Guest@123"
+        )
         db.session.add(user)
         customers.append(user)
     amenity_names = [

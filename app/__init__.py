@@ -10,7 +10,10 @@ from app.utils.responses import error
 
 
 def create_app(config_object=None):
-    env_name = os.getenv("APP_ENV", os.getenv("FLASK_ENV", "development")).lower()
+    env_name = os.getenv(
+        "APP_ENV", os.getenv("VERCEL_ENV", os.getenv("FLASK_ENV", "development"))
+    ).lower()
+    is_deployment = env_name in {"production", "preview"}
     app = Flask(
         __name__,
         instance_relative_config=True,
@@ -18,14 +21,13 @@ def create_app(config_object=None):
         template_folder="templates",
     )
     app.config.from_object(
-        config_object
-        or ("config.ProdConfig" if env_name == "production" else "config.DevConfig")
+        config_object or ("config.ProdConfig" if is_deployment else "config.DevConfig")
     )
     if isinstance(config_object, dict):
         app.config.update(config_object)
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
     os.makedirs(app.instance_path, exist_ok=True)
-    if env_name == "production" or app.config.get("ENVIRONMENT") == "production":
+    if is_deployment or app.config.get("ENVIRONMENT") == "production":
         forbidden = {
             "dev-only-change-me",
             "dev-jwt-only-change-me",
@@ -37,6 +39,10 @@ def create_app(config_object=None):
         ):
             raise RuntimeError(
                 "Production requires non-default SECRET_KEY and JWT_SECRET_KEY values."
+            )
+        if app.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite:"):
+            raise RuntimeError(
+                "Production and preview deployments require a persistent DATABASE_URL."
             )
     db.init_app(app)
     migrate.init_app(app, db)
