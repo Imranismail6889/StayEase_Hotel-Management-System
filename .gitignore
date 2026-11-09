@@ -5,7 +5,11 @@ __pycache__/
 .venv/
 venv/
 .env
+.env.*
+!.env.example
 instance/
 *.db
 *.sqlite3
 htmlcov/
+.vercel/
+public/static/

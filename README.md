@@ -24,7 +24,15 @@ For production, set strong SECRET_KEY and JWT_SECRET_KEY values and configure DA
 
     gunicorn wsgi:app -b 0.0.0.0:8000
 
+## Vercel deployment
+
+Vercel serves Flask through the root `wsgi.py` entry point. The configured build step copies CSS and JavaScript into `public/static/` for CDN delivery. Production and preview environments must set strong `SECRET_KEY` and `JWT_SECRET_KEY` values and a persistent PostgreSQL or MySQL `DATABASE_URL`; the app refuses to start with SQLite in those environments. Apply migrations to the remote database before serving traffic.
+
+The demo credentials above are for local development only. Production `flask seed` requires a unique `STAYEASE_ADMIN_PASSWORD` with at least 16 characters. Seeded customer accounts receive random passwords unless `STAYEASE_GUEST_PASSWORD` is set. `flask reset-db` is disabled in production and preview environments.
+
 ## Demo accounts
+
+These accounts are created by local demo seeding and are not production credentials.
 
 - Admin: admin@stayease.com / Admin@123
 - Guest: guest@stayease.com / Guest@123
